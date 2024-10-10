@@ -236,6 +236,8 @@
 </div>
 
 <script>
+
+
     let currentFlight;
     let currentUser = null;
 
@@ -445,16 +447,20 @@
 
 
     function selectSeat(seatKey, seatDiv) {
+        if (seatDiv.classList.contains('reserved')) {
+            alert("This seat is already reserved.");
+            return;
+        }
+
         if (seatDiv.classList.contains('selected')) {
             seatDiv.classList.remove('selected');
-            delete reservedSeats[seatKey];
+            delete reservedSeats[seatKey]; 
         } else {
-            if (!seatDiv.classList.contains('reserved')) {
-                seatDiv.classList.add('selected');
-                reservedSeats[seatKey] = true;
-            }
+            seatDiv.classList.add('selected');
+            reservedSeats[seatKey] = true; 
         }
     }
+
 
     function confirmBooking() {
         const passengerName = document.getElementById('passengerName').value;
@@ -468,13 +474,16 @@
         let totalPrice = parseFloat(currentFlight.price) + extraBaggage + mealPreference + travelInsurance;
 
         if (currentFlight.returnFlight) {
-            totalPrice += parseFloat(currentFlight.returnFlight.price);  // Ensure return flight price is added
+            totalPrice += parseFloat(currentFlight.returnFlight.price);  
         }
+
 
         const selectedSeats = Object.keys(reservedSeats).filter(seatKey => reservedSeats[seatKey]);
 
         let bookedFlights = JSON.parse(localStorage.getItem('bookedFlights')) || [];
+        const bookingNumber = bookedFlights.length + 1;
         bookedFlights.push({ 
+            bookingNumber,
             ...currentFlight, 
             passengerName, 
             passengerEmail, 
@@ -490,21 +499,44 @@
 
         localStorage.setItem('bookedFlights', JSON.stringify(bookedFlights));
         alert(`Booking confirmed for ${passengerName}. Total Price: $${totalPrice}`);
+
+        let confirmationDetails = `
+        <p>Outbound Flight ID: ${currentFlight.flightId}</p>
+        <p>Departure: ${currentFlight.departure}</p>
+        <p>Arrival: ${currentFlight.arrival}</p>
+        <p>Date: ${currentFlight.date}</p>
+        <p>Price: $${currentFlight.price}</p>
+        <p>Selected Seat(s): ${selectedSeats}</p>
+        `;
+
+        if (currentFlight.returnFlight) {
+            confirmationDetails += `
+            <p>Return Flight ID: ${currentFlight.returnFlight.flightId}</p>
+            <p>Departure: ${currentFlight.returnFlight.departure}</p>
+            <p>Arrival: ${currentFlight.returnFlight.arrival}</p>
+            <p>Date: ${currentFlight.returnFlight.date}</p>
+            <p>Price: $${currentFlight.returnFlight.price}</p>
+            `;
+        }
+
+        document.getElementById('confirmationDetails').innerHTML = confirmationDetails;
+        localStorage.setItem('reservedSeats', JSON.stringify(reservedSeats));
         
-        // Confirmation details...
+        
         showTab('confirmationSection');
     }
 
 
     function displayBookedFlights() {
         const bookedFlightsList = document.getElementById('bookedFlightsList');
-        bookedFlightsList.innerHTML = ''; // Clear previous results
+        bookedFlightsList.innerHTML = ''; 
 
         let bookedFlights = JSON.parse(localStorage.getItem('bookedFlights')) || [];
         bookedFlights = bookedFlights.filter(flight => flight.username === currentUser.username);
         bookedFlights.forEach((flight, index) => {
             const flightDiv = document.createElement('div');
-            flightDiv.innerHTML = `<strong>Booking ${index + 1}:</strong> Flight ${flight.flightId}, ${flight.passengerName}, Total Price: $${flight.totalPrice}, Seat Selected: ${flight.selectedSeats.join(', ')}<br>`;
+            flightDiv.innerHTML = `<strong>Booking #${flight.bookingNumber}:</strong> Flight ${flight.flightId}, ${flight.passengerName}, Total Price: $${flight.totalPrice}, Seat Selected: ${flight.selectedSeats}<br>`;
+
             
             if (flight.returnFlight) {
                 flightDiv.innerHTML += `
@@ -517,7 +549,8 @@
 
             const cancelButton = document.createElement('button');
             cancelButton.innerText = 'Cancel Booking';
-            cancelButton.onclick = () => cancelBooking(flight.flightId); 
+            cancelButton.onclick = () => cancelBooking(flight.bookingNumber);
+
             cancelButton.classList.add('cancel-button');
                     
             flightDiv.appendChild(cancelButton);
@@ -529,16 +562,16 @@
         }
     }
 
-    function cancelBooking(flightId) {
+    function cancelBooking(bookingNumber) {
         let bookedFlights = JSON.parse(localStorage.getItem('bookedFlights')) || [];
-             
-        bookedFlights = bookedFlights.filter(flight => flight.flightId !== flightId);
-      
-        localStorage.setItem('bookedFlights', JSON.stringify(bookedFlights));
-
+        const updatedBookings = bookedFlights.filter(flight => flight.bookingNumber !== bookingNumber);
+        
+        localStorage.setItem('bookedFlights', JSON.stringify(updatedBookings));
         displayBookedFlights();
-        alert(`Booking for Flight ${flightId} has been canceled.`);
+        
+        alert(`Booking #${bookingNumber} has been canceled.`);
     }
+
 
 </script>
 </body>
