@@ -4,7 +4,6 @@
     <title>Dream Air</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
             margin: 20px;
             padding: 20px;
             border: 1px solid;
@@ -16,7 +15,6 @@
         }
         .tabs {
             display: flex;
-            justify-content: space-around;
             cursor: pointer;
             margin-bottom: 20px;
         }
@@ -111,7 +109,7 @@
     <button class="tab" onclick="showTab('bookedFlightsSection')">Booked Flights</button>
 </div>
 
-<!-- Customer Management Section -->
+
 <div id="customerManagement" class="tab-content active">
     <div>
         <h2>Login</h2>
@@ -125,7 +123,6 @@
     </div>
 </div>
 
-<!-- Sign Up Section -->
 <div id="signUpSection" class="hidden">
     <div>
         <h2>Register</h2>
@@ -144,19 +141,38 @@
 <div id="availableFlights" class="tab-content">
     <div class="flight-list">
         <h2>Available Flights</h2>
-        <div class="flight-item" data-id="101" data-departure="New York" data-arrival="London" data-date="2024-12-01" data-price="500">
-            <strong>Flight 101:</strong> New York to London on 2024-12-01<br>
+        <div class="flight-item" data-id="135" data-departure="New York" data-arrival="London" data-date="2024-12-01" data-price="500">
+            <strong>Flight 135:</strong> New York to London on 2024-12-01<br>
             Price: $500<br>
         </div>
-        <div class="flight-item" data-id="202" data-departure="Los Angeles" data-arrival="Tokyo" data-date="2024-12-15" data-price="700">
-            <strong>Flight 202:</strong> Los Angeles to Tokyo on 2024-12-15<br>
+        <div class="flight-item" data-id="865" data-departure="Los Angeles" data-arrival="Tokyo" data-date="2024-12-15" data-price="700">
+            <strong>Flight 865:</strong> Los Angeles to Tokyo on 2024-12-15<br>
             Price: $700<br>
         </div>
-        <div class="flight-item" data-id="303" data-departure="Paris" data-arrival="Berlin" data-date="2024-12-20" data-price="300">
-            <strong>Flight 303:</strong> Paris to Berlin on 2024-12-20<br>
+        <div class="flight-item" data-id="945" data-departure="Paris" data-arrival="Berlin" data-date="2024-12-20" data-price="300">
+            <strong>Flight 945:</strong> Paris to Berlin on 2024-12-20<br>
             Price: $300<br>
         </div>
-        <!-- Add more flights as needed -->
+        <div class="flight-item" data-id="267" data-departure="Australia" data-arrival="Fiji" data-date="2024-12-05" data-price="350">
+            <strong>Flight 267:</strong> Australia to Fiji on 2024-12-05<br>
+            Price: $350<br>
+        </div>
+        <div class="flight-item" data-id="729" data-departure="San Francisco" data-arrival="New York" data-date="2024-12-10" data-price="450">
+            <strong>Flight 729:</strong> San Francisco to New York on 2024-12-10<br>
+            Price: $450<br>
+        </div>
+        <div class="flight-item" data-id="410" data-departure="Houston" data-arrival="Atlanta" data-date="2024-12-15" data-price="300">
+            <strong>Flight 410:</strong> Houston to Atlanta on 2024-12-15<br>
+            Price: $300<br>
+        </div>
+        <div class="flight-item" data-id="302" data-departure="Seattle" data-arrival="Los Angeles" data-date="2024-12-20" data-price="400">
+            <strong>Flight 302:</strong> Seattle to Los Angeles on 2024-12-20<br>
+            Price: $400<br>
+        </div>
+        <div class="flight-item" data-id="678" data-departure="Australia" data-arrival="Tokyo" data-date="2024-12-20" data-price="500">
+            <strong>Flight 678:</strong> Australia to Tokyo on 2024-12-20<br>
+            Price: $500<br>
+        </div>
     </div>
 </div>
 
@@ -271,6 +287,10 @@
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         alert("Registration successful! You can now log in.");
+
+        document.getElementById('registerUsername').value = '';
+        document.getElementById('registerEmail').value = '';
+        document.getElementById('registerPassword').value = '';
     }
 
     function loginUser() {
@@ -285,6 +305,8 @@
             document.getElementById('loginMessage').innerText = "Login successful! Welcome, " + user.username;
             document.getElementById('loginMessage').classList.remove('hidden');
             showTab('bookingSection');
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
         } else {
             document.getElementById('loginMessage').innerText = "Invalid username or password.";
             document.getElementById('loginMessage').classList.remove('hidden');
@@ -310,7 +332,7 @@
         const departureCity = document.getElementById('departureCity').value;
         const arrivalCity = document.getElementById('arrivalCity').value;
         const flightDate = document.getElementById('flightDate').value;
-        const isRoundTrip = document.getElementById('roundTrip').checked;
+        const RoundTrip = document.getElementById('roundTrip').checked;
         const returnDate = document.getElementById('returnDate').value;
 
         const flights = document.querySelectorAll('.flight-item');
@@ -328,7 +350,7 @@
             }
 
             
-            if (isRoundTrip && returnDate) {
+            if (RoundTrip && returnDate) {
                 const returnFlightDeparture = flight.dataset.arrival; 
                 const returnFlightArrival = flight.dataset.departure; 
                 const returnFlightDateData = flight.dataset.date;
@@ -348,7 +370,7 @@
 
     function displayFoundFlights(flights) {
         const availableFlightsList = document.getElementById('availableFlightsList');
-        availableFlightsList.innerHTML = ''; // Clear previous results
+        availableFlightsList.innerHTML = ''; 
 
         if (flights.length === 0) {
             availableFlightsList.innerHTML = '<p>No flights found.</p>';
@@ -513,16 +535,21 @@
         document.getElementById('confirmationDetails').innerHTML = confirmationDetails;
         localStorage.setItem('reservedSeats', JSON.stringify(reservedSeats));
 
+        document.getElementById('departureCity').value = '';
+        document.getElementById('arrivalCity').value = '';
+        document.getElementById('flightDate').value = '';
+        document.getElementById('returnDate').value = '';
         document.getElementById('passengerName').value = '';
         document.getElementById('passengerEmail').value = '';
         document.getElementById('passengerPhone').value = '';
         document.getElementById('returnDate').value = '';
-
         document.getElementById('extraBaggage').checked = false;
         document.getElementById('mealPreference').checked = false;
         document.getElementById('travelInsurance').checked = false;
-        
-        
+        document.getElementById('bookingForm').classList.add('hidden');
+        document.getElementById('seatMapSection').classList.add('hidden');
+        document.getElementById('foundFlights').classList.add('hidden');
+
         showTab('confirmationSection');
     }
 
@@ -585,9 +612,6 @@
             alert(`Booking #${bookingNumber} not found.`);
         }
     }
-
-
-
 </script>
 </body>
 </html>
